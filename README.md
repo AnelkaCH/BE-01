@@ -22,7 +22,7 @@ Curl:
 
 ```bash
 curl http://localhost:3000/api/health
-curl http://localhost:3000/api/hello?name=Anelka
+curl http://localhost:3000/api/hello?name=WhatsMyName
 ```
 
 Browser: open `http://localhost:3000/api/hello?name=WhatsMyName` directly in the address bar.
