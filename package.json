@@ -1,0 +1,12 @@
+{
+  "name": "backend-basics",
+  "version": "1.0.0",
+  "description": "Smallest possible backend with two JSON endpoints",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.19.2"
+  }
+}
