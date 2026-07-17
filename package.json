@@ -1,7 +1,7 @@
 {
   "name": "backend-basics",
   "version": "1.0.0",
-  "description": "Smallest possible backend with two JSON endpoints",
+  "description": "A simple to-do list API with CRUD operations",
   "main": "server.js",
   "scripts": {
     "start": "node server.js"

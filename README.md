@@ -1,12 +1,11 @@
-# FlyRank AI Internship BE-01 - Backend Basics
+# Task API
 
-A minimal backend with two JSON endpoints, built as a first assignment for the FlyRank AI Backend Engineering track.
+A simple to-do list API built with Node.js and Express, developed as part of the Backend Engineering track.
 
 ## Endpoints
 
-- `GET /` - returns with a greeting message
-- `GET /api/health` - returns server status and current timestamp
-- `GET /api/hello?name=YourName` - returns a greeting message with name
+- `GET /` - API description (name, version, available endpoints)
+- `GET /health` - Health check, returns `{ "status": "ok" }`
 
 ## Run locally
 
@@ -19,11 +18,9 @@ Server runs at `http://localhost:3000`.
 
 ## Test it
 
-Curl:
-
 ```bash
-curl http://localhost:3000/api/health
-curl http://localhost:3000/api/hello?name=WhatsMyName
+curl -i http://localhost:3000/
+curl -i http://localhost:3000/health
 ```
 
-Browser: open `http://localhost:3000/api/hello?name=WhatsMyName` directly in the address bar.
+Browser: open `http://localhost:3000/` or `http://localhost:3000/health` directly.
