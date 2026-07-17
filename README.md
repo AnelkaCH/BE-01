@@ -4,8 +4,9 @@ A minimal backend with two JSON endpoints, built as a first assignment for the F
 
 ## Endpoints
 
+- `GET /` - returns with a greeting message
 - `GET /api/health` - returns server status and current timestamp
-- `GET /api/hello?name=YourName` - returns a greeting message
+- `GET /api/hello?name=YourName` - returns a greeting message with name
 
 ## Run locally
 
