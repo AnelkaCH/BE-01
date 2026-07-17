@@ -6,6 +6,8 @@ A simple to-do list API built with Node.js and Express, developed as part of the
 
 - `GET /` - API description (name, version, available endpoints)
 - `GET /health` - Health check, returns `{ "status": "ok" }`
+- `GET /tasks` - List all tasks
+- `GET /tasks/:id` - Get a single task by ID (404 if not found)
 
 ## Run locally
 
@@ -21,6 +23,9 @@ Server runs at `http://localhost:3000`.
 ```bash
 curl -i http://localhost:3000/
 curl -i http://localhost:3000/health
+curl -i http://localhost:3000/tasks
+curl -i http://localhost:3000/tasks/1
+curl -i http://localhost:3000/tasks/99
 ```
 
-Browser: open `http://localhost:3000/` or `http://localhost:3000/health` directly.
+Browser: open `http://localhost:3000/` or `http://localhost:3000/tasks` directly.
