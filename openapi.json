@@ -1,0 +1,306 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "name": "Task API",
+    "version": "1.0",
+    "description": "A simple to-do list API with full CRUD operations."
+  },
+  "paths": {
+    "/": {
+      "get": {
+        "summary": "API description",
+        "description": "Returns the API name, version, and available endpoints.",
+        "responses": {
+          "200": {
+            "description": "API info",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "name": { "type": "string" },
+                    "version": { "type": "string" },
+                    "endpoints": {
+                      "type": "array",
+                      "items": { "type": "string" }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/health": {
+      "get": {
+        "summary": "Health check",
+        "description": "Returns server status. Used to verify the server is running.",
+        "responses": {
+          "200": {
+            "description": "Server is healthy",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "string" }
+                  }
+                },
+                "example": {
+                  "status": "ok"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/tasks": {
+      "get": {
+        "summary": "List all tasks",
+        "description": "Returns the full list of tasks.",
+        "responses": {
+          "200": {
+            "description": "List of tasks",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Task"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "summary": "Create a new task",
+        "description": "Creates a new task with the given title. Returns 401 if title is missing or empty.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateTask"
+              },
+              "example": {
+                "title": "Buy milk"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Task created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Task"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": "Title is required"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/tasks/{id}": {
+      "get": {
+        "summary": "Get a single task",
+        "description": "Returns one task by its ID.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer" },
+            "description": "Task ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Task found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Task"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Task not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": "Task 99 not found"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "summary": "Update a task",
+        "description": "Replaces a task's title and/or done status with the values in the request body.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer" },
+            "description": "Task ID"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateTask"
+              },
+              "example": {
+                "title": "Buy milk and eggs",
+                "done": true
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Task updated",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Task"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": "Title cannot be empty"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Task not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": "Task 99 not found"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete a task",
+        "description": "Removes the task. Returns 204 on success.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer" },
+            "description": "Task ID"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Task deleted"
+          },
+          "404": {
+            "description": "Task not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "error": "Task 99 not found"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Task": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer" },
+          "title": { "type": "string" },
+          "done": { "type": "boolean" }
+        },
+        "example": {
+          "id": 1,
+          "title": "Buy groceries",
+          "done": false
+        }
+      },
+      "CreateTask": {
+        "type": "object",
+        "required": ["title"],
+        "properties": {
+          "title": { "type": "string" }
+        },
+        "example": {
+          "title": "Buy milk"
+        }
+      },
+      "UpdateTask": {
+        "type": "object",
+        "properties": {
+          "title": { "type": "string" },
+          "done": { "type": "boolean" }
+        },
+        "example": {
+          "title": "Buy milk and eggs",
+          "done": true
+        }
+      },
+      "Error": {
+        "type": "object",
+        "properties": {
+          "error": { "type": "string" }
+        },
+        "example": {
+          "error": "Task 99 not found"
+        }
+      }
+    }
+  }
+}

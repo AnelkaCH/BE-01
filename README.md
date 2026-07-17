@@ -11,6 +11,7 @@ A simple to-do list API built with Node.js and Express, developed as part of the
 - `POST /tasks` - Create a new task (201)
 - `PUT /tasks/:id` - Update a task's title/done (404 if not found)
 - `DELETE /tasks/:id` - Delete a task (204, 404 if not found)
+- `GET /docs` - Swagger UI interactive documentation
 
 ## Run locally
 
@@ -20,8 +21,6 @@ npm start
 ```
 
 Server runs at `http://localhost:3000`.
-
-## Test it
 
 ## Test it
 
@@ -65,3 +64,13 @@ curl -i -X PUT http://localhost:3000/tasks/1 -H "Content-Type: application/json"
 ```
 
 Browser: open `http://localhost:3000/` or `http://localhost:3000/tasks` directly.
+
+## Swagger UI
+
+Interactive API documentation is available at:
+
+```
+http://localhost:3000/docs
+```
+
+You can test the full CRUD cycle (create, read, update, delete) directly from the browser using the **Try it out** button on each endpoint.
