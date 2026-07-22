@@ -14,3 +14,5 @@ if (result.count === 0) {
   insert.run('Groceries', 0);
   insert.run('Laundry', 0);
 }
+
+module.exports = db

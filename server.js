@@ -3,15 +3,10 @@ const swaggerUi = require('swagger-ui-express');
 const swaggerDocument = require('./openapi.json');
 const app = express();
 const PORT = 3000;
+const db = require('./database.js');
 
 app.use(express.json());
 app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
-
-let tasks = [
-  { id: 1, title: 'Buy groceries', done: false },
-  { id: 2, title: 'Read a chapter', done: true },
-  { id: 3, title: 'Push code to GitHub', done: false },
-];
 
 app.get('/', (req, res) => {
   res.json({
@@ -26,11 +21,12 @@ app.get('/health', (req, res) => {
 });
 
 app.get('/tasks', (req, res) => {
-  res.json(tasks);
+  const rows = db.prepare('SELECT * FROM tasks').all();
+  res.json(rows);
 });
 
 app.get('/tasks/:id', (req, res) => {
-  const task = tasks.find(t => t.id === Number(req.params.id));
+  const task = db.prepare('SELECT * FROM tasks WHERE id = ?').get(req.params.id);
   if (!task) {
     return res.status(404).json({ error: `Task ${req.params.id} not found` });
   }
