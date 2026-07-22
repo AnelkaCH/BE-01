@@ -44,17 +44,31 @@ app.post('/tasks', (req, res) => {
 });
 
 app.put('/tasks/:id', (req, res) => {
-  const task = tasks.find(t => t.id === Number(req.params.id));
+  const id = Number(req.params.id);
+  const task = db.prepare('SELECT * FROM tasks WHERE id = ?').get(id);
   if (!task) {
-    return res.status(404).json({ error: `Task ${req.params.id} not found` });
+    return res.status(404).json({ error: `Task ${id} not found` });
   }
   const { title, done } = req.body;
   if (title !== undefined && title.trim() === '') {
     return res.status(400).json({ error: 'Title cannot be empty' });
   }
-  if (title !== undefined) task.title = title.trim();
-  if (done !== undefined) task.done = done;
-  res.json(task);
+  const updates = [];
+  const params = [];
+  if (title !== undefined) {
+    updates.push('title = ?');
+    params.push(title.trim());
+  }
+  if (done !== undefined) {
+    updates.push('done = ?');
+    params.push(done ? 1 : 0);
+  }
+  if (updates.length > 0) {
+    params.push(id);
+    db.prepare(`UPDATE tasks SET ${updates.join(', ')} WHERE id = ?`).run(...params);
+  }
+  const updated = db.prepare('SELECT * FROM tasks WHERE id = ?').get(id);
+  res.json(updated);
 });
 
 app.delete('/tasks/:id', (req, res) => {
