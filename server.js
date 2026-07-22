@@ -72,11 +72,11 @@ app.put('/tasks/:id', (req, res) => {
 });
 
 app.delete('/tasks/:id', (req, res) => {
-  const index = tasks.findIndex(t => t.id === Number(req.params.id));
-  if (index === -1) {
-    return res.status(404).json({ error: `Task ${req.params.id} not found` });
+  const id = Number(req.params.id);
+  const info = db.prepare('DELETE FROM tasks WHERE id = ?').run(id);
+  if (info.changes === 0) {
+    return res.status(404).json({ error: `Task ${id} not found` });
   }
-  tasks.splice(index, 1);
   res.status(204).end();
 });
 
