@@ -2,6 +2,10 @@
 
 A simple to-do list API built with Node.js and Express. Full CRUD operations with interactive Swagger UI documentation.
 
+## Submission Notes
+- Assignment 1 (in-memory version): see tag `BE-01`
+- Assignment 2 (SQLite version): see branch `BE-02`
+
 ## Install & Run
 
 ```bash
