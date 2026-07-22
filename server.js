@@ -26,7 +26,7 @@ app.get('/tasks', (req, res) => {
 });
 
 app.get('/tasks/:id', (req, res) => {
-  const task = db.prepare('SELECT * FROM tasks WHERE id = ?').get(req.params.id);
+  const task = db.prepare('SELECT * FROM tasks WHERE id = ?').get(Number(req.params.id));
   if (!task) {
     return res.status(404).json({ error: `Task ${req.params.id} not found` });
   }
@@ -38,12 +38,8 @@ app.post('/tasks', (req, res) => {
   if (!title || title.trim() === '') {
     return res.status(400).json({ error: 'Title is required' });
   }
-  const newTask = {
-    id: tasks.length > 0 ? Math.max(...tasks.map(t => t.id)) + 1 : 1,
-    title: title.trim(),
-    done: false,
-  };
-  tasks.push(newTask);
+  const info = db.prepare('INSERT INTO tasks (title, done) VALUES (?, ?)').run(title.trim(), 0)
+  const newTask = db.prepare('SELECT * FROM tasks WHERE id = ?').get(info.lastInsertRowid)
   res.status(201).json(newTask);
 });
 
