@@ -3,7 +3,7 @@ const swaggerUi = require('swagger-ui-express');
 const swaggerDocument = require('./openapi.json');
 const app = express();
 const PORT = 3000;
-const db = require('./database.js');
+const repo = require('./src/repositories/postgresTaskRepository.js');
 
 app.use(express.json());
 app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
@@ -20,32 +20,31 @@ app.get('/health', (req, res) => {
   res.json({ status: 'ok' });
 });
 
-app.get('/tasks', (req, res) => {
-  const rows = db.prepare('SELECT * FROM tasks').all();
+app.get('/tasks', async (req, res) => {
+  const rows = await repo.getAll();
   res.json(rows);
 });
 
-app.get('/tasks/:id', (req, res) => {
-  const task = db.prepare('SELECT * FROM tasks WHERE id = ?').get(Number(req.params.id));
+app.get('/tasks/:id', async (req, res) => {
+  const task = await repo.getById(Number(req.params.id));
   if (!task) {
     return res.status(404).json({ error: `Task ${req.params.id} not found` });
   }
   res.json(task);
 });
 
-app.post('/tasks', (req, res) => {
+app.post('/tasks', async (req, res) => {
   const { title } = req.body;
   if (!title || title.trim() === '') {
     return res.status(400).json({ error: 'Title is required' });
   }
-  const info = db.prepare('INSERT INTO tasks (title, done) VALUES (?, ?)').run(title.trim(), 0)
-  const newTask = db.prepare('SELECT * FROM tasks WHERE id = ?').get(info.lastInsertRowid)
+  const newTask = await repo.create(title.trim());
   res.status(201).json(newTask);
 });
 
-app.put('/tasks/:id', (req, res) => {
+app.put('/tasks/:id', async (req, res) => {
   const id = Number(req.params.id);
-  const task = db.prepare('SELECT * FROM tasks WHERE id = ?').get(id);
+  const task = await repo.getById(id);
   if (!task) {
     return res.status(404).json({ error: `Task ${id} not found` });
   }
@@ -53,28 +52,17 @@ app.put('/tasks/:id', (req, res) => {
   if (title !== undefined && title.trim() === '') {
     return res.status(400).json({ error: 'Title cannot be empty' });
   }
-  const updates = [];
-  const params = [];
-  if (title !== undefined) {
-    updates.push('title = ?');
-    params.push(title.trim());
-  }
-  if (done !== undefined) {
-    updates.push('done = ?');
-    params.push(done ? 1 : 0);
-  }
-  if (updates.length > 0) {
-    params.push(id);
-    db.prepare(`UPDATE tasks SET ${updates.join(', ')} WHERE id = ?`).run(...params);
-  }
-  const updated = db.prepare('SELECT * FROM tasks WHERE id = ?').get(id);
+  const updated = await repo.update(id, {
+    title: title !== undefined ? title.trim() : undefined,
+    done,
+  });
   res.json(updated);
 });
 
-app.delete('/tasks/:id', (req, res) => {
+app.delete('/tasks/:id', async (req, res) => {
   const id = Number(req.params.id);
-  const info = db.prepare('DELETE FROM tasks WHERE id = ?').run(id);
-  if (info.changes === 0) {
+  const deleted = await repo.delete(id);
+  if (!deleted) {
     return res.status(404).json({ error: `Task ${id} not found` });
   }
   res.status(204).end();
